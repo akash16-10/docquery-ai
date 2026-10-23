@@ -49,7 +49,7 @@
 
 ```bash
 # Clone the repository
-git clone https://github.com/rahulrajx/docquery-ai.git
+git clone https://github.com/akash16-10/docquery-ai.git
 cd docquery-ai
 
 # Create virtual environment (recommended)
@@ -210,14 +210,14 @@ This project is open source and available under the MIT License.
 
 ## 👤 Author
 
-**Rahul Raj** — MCA, MNNIT Allahabad  
-[GitHub](https://github.com/rahulrajx) • [LinkedIn](https://linkedin.com/in/rahul-rajx)
+**Akash Kumar Prajapati** — MCA, MNNIT Allahabad  
+[GitHub](https://github.com/akash16-10) • [LinkedIn](https://www.linkedin.com/in/akashprajapati051/) • [Email](mailto:rm.akash1610@gmail.com)
 
 ---
 
 ## 🤝 Contributing
 
-Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/rahulrajx/docquery-ai/issues).
+Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/akash16-10/docquery-ai/issues).
 
 ---
 
