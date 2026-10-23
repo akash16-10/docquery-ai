@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DocQuery AI — Intelligent Document Q&A</title>
+    <meta name="description" content="Upload any PDF document and ask questions. Get AI-generated answers grounded in your document content with source citations." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+    <!-- ─── Animated Background ─── -->
+    <div class="bg-grid"></div>
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+    <div class="bg-glow bg-glow-3"></div>
+
+    <div class="app-container">
+        <!-- ─── Header ─── -->
+        <header class="app-header">
+            <div class="logo-section">
+                <div class="logo-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                        <line x1="16" y1="13" x2="8" y2="13"/>
+                        <line x1="16" y1="17" x2="8" y2="17"/>
+                        <polyline points="10 9 9 9 8 9"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="logo-text">DocQuery <span class="accent">AI</span></h1>
+                    <p class="logo-subtitle">Intelligent Document Q&A</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <div id="session-badge" class="session-badge hidden">
+                    <span class="pulse-dot"></span>
+                    <span id="session-filename">No document</span>
+                </div>
+                <button id="btn-new-session" class="btn-ghost hidden" title="Upload new document">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                    New
+                </button>
+            </div>
+        </header>
+
+        <!-- ─── Main Content ─── -->
+        <main class="main-content">
+        <!-- ─── API Key Setup (shown when key is missing) ─── -->
+            <section id="api-key-section" class="upload-section hidden">
+                <div class="upload-card" style="max-width:480px">
+                    <div class="upload-icon-wrapper">
+                        <div class="upload-icon-bg"></div>
+                        <svg class="upload-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                        </svg>
+                    </div>
+                    <h2 class="upload-title">Enter Your Groq API Key</h2>
+                    <p class="upload-desc">A free Groq API key is required to power the AI. It will be saved to your <code style="background:rgba(255,255,255,0.07);padding:2px 6px;border-radius:4px;font-size:0.82em">.env</code> file automatically.</p>
+
+                    <div style="margin:1.5rem 0;display:flex;flex-direction:column;gap:0.75rem;">
+                        <input
+                            id="api-key-input"
+                            type="password"
+                            placeholder="gsk_..."
+                            style="width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.1);border-radius:10px;color:var(--text-primary);font-size:0.9rem;font-family:inherit;outline:none;transition:border-color 0.2s"
+                            onFocus="this.style.borderColor='var(--accent-primary)'"
+                            onBlur="this.style.borderColor='rgba(255,255,255,0.1)'"
+                        />
+                        <button id="btn-save-key" onclick="saveApiKey()" style="width:100%;padding:0.75rem;background:var(--accent-gradient);border:none;border-radius:10px;color:#fff;font-size:0.9rem;font-weight:600;cursor:pointer;font-family:inherit;transition:opacity 0.2s" onMouseOver="this.style.opacity='0.85'" onMouseOut="this.style.opacity='1'">
+                            Save API Key &amp; Continue
+                        </button>
+                    </div>
+
+                    <p style="font-size:0.78rem;color:var(--text-tertiary);text-align:center;">
+                        Don't have a key? 
+                        <a href="https://console.groq.com/keys" target="_blank" style="color:var(--accent-secondary);text-decoration:none;font-weight:500;">Get a free key at console.groq.com →</a>
+                    </p>
+                </div>
+            </section>
+
+            <!-- Upload Section (shown after key is set) -->
+
+            <section id="upload-section" class="upload-section">
+                <div class="upload-card">
+                    <div class="upload-icon-wrapper">
+                        <div class="upload-icon-bg"></div>
+                        <svg class="upload-icon" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="17 8 12 3 7 8"/>
+                            <line x1="12" y1="3" x2="12" y2="15"/>
+                        </svg>
+                    </div>
+                    <h2 class="upload-title">Upload Your Document</h2>
+                    <p class="upload-desc">Drop a PDF file here or click to browse. Your document will be processed with AI-powered semantic indexing.</p>
+
+                    <div id="drop-zone" class="drop-zone">
+                        <input type="file" id="file-input" accept=".pdf" hidden />
+                        <div class="drop-zone-content">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <polyline points="14 2 14 8 20 8"/>
+                            </svg>
+                            <span>Click or drag PDF here</span>
+                            <span class="drop-zone-hint">Maximum file size: 20MB</span>
+                        </div>
+                    </div>
+
+                    <!-- Processing indicator -->
+                    <div id="processing-section" class="processing-section hidden">
+                        <div class="processing-spinner"></div>
+                        <p id="processing-text" class="processing-text">Processing document...</p>
+                        <div class="processing-steps">
+                            <div id="step-extract" class="step">
+                                <span class="step-icon">◯</span>
+                                <span>Extracting text from PDF</span>
+                            </div>
+                            <div id="step-chunk" class="step">
+                                <span class="step-icon">◯</span>
+                                <span>Chunking into semantic segments</span>
+                            </div>
+                            <div id="step-embed" class="step">
+                                <span class="step-icon">◯</span>
+                                <span>Generating vector embeddings</span>
+                            </div>
+                            <div id="step-index" class="step">
+                                <span class="step-icon">◯</span>
+                                <span>Building FAISS index</span>
+                            </div>
+                        </div>
+                        <button id="btn-cancel-upload" class="btn-cancel-upload" onclick="cancelUpload()">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                            </svg>
+                            Cancel Upload
+                        </button>
+                    </div>
+
+                    <div class="upload-features">
+                        <div class="feature">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                            <span>RAG-Powered Retrieval</span>
+                        </div>
+                        <div class="feature">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                            <span>Source Citations</span>
+                        </div>
+                        <div class="feature">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                            <span>Multi-turn Conversations</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Chat Section (shown after upload) -->
+            <section id="chat-section" class="chat-section hidden">
+                <!-- Document Info Bar -->
+                <div id="doc-info-bar" class="doc-info-bar">
+                    <div class="doc-info-left">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                        </svg>
+                        <span id="doc-name">document.pdf</span>
+                    </div>
+                    <div class="doc-info-right">
+                        <span class="doc-stat" id="doc-pages">0 pages</span>
+                        <span class="doc-stat-sep">•</span>
+                        <span class="doc-stat" id="doc-chunks">0 chunks</span>
+                    </div>
+                </div>
+
+                <!-- Chat Messages -->
+                <div id="chat-messages" class="chat-messages">
+                    <div class="welcome-message">
+                        <div class="welcome-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                                <line x1="12" y1="17" x2="12.01" y2="17"/>
+                            </svg>
+                        </div>
+                        <h3>Document Ready!</h3>
+                        <p>Your document has been indexed. Ask any question about its content and I'll provide answers with source citations.</p>
+                        <div class="suggestion-chips">
+                            <button class="chip" onclick="askSuggestion('What is the main topic of this document?')">📄 Main topic?</button>
+                            <button class="chip" onclick="askSuggestion('Summarize the key points of this document')">📝 Key points</button>
+                            <button class="chip" onclick="askSuggestion('What are the conclusions or findings?')">🎯 Conclusions</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Input -->
+                <div class="chat-input-area">
+                    <div class="chat-input-wrapper">
+                        <textarea 
+                            id="chat-input" 
+                            class="chat-input" 
+                            placeholder="Ask a question about your document..."
+                            rows="1"
+                            maxlength="2000"
+                        ></textarea>
+                        <button id="btn-send" class="btn-send" disabled title="Send question">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="22" y1="2" x2="11" y2="13"/>
+                                <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="input-hint">Press Enter to send • Shift+Enter for new line</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast hidden"></div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>
